@@ -12,7 +12,6 @@ my %WriteMakefileArgs = (
   'ABSTRACT' => 'consume Ant build files',
   'AUTHOR' => 'Mark Gardner <mjgardner@cpan.org>',
   'BUILD_REQUIRES' => {
-    'Env::Path' => '0',
     'File::Find' => '0',
     'File::Temp' => '0',
     'Scalar::Util' => '0',
@@ -47,7 +46,7 @@ my %WriteMakefileArgs = (
     'namespace::autoclean' => '0',
     'utf8' => '0'
   },
-  'VERSION' => '0.200',
+  'VERSION' => '0.201',
   'test' => {
     'TESTS' => 't/*.t'
   }

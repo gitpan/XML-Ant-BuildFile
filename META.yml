@@ -3,7 +3,6 @@ abstract: 'consume Ant build files'
 author:
   - 'Mark Gardner <mjgardner@cpan.org>'
 build_requires:
-  Env::Path: 0
   File::Find: 0
   File::Temp: 0
   Scalar::Util: 0
@@ -41,4 +40,4 @@ requires:
   utf8: 0
 resources:
   bugtracker: http://github.com/mjgardner/XML-Ant-BuildFile/issues
-version: 0.200
+version: 0.201
