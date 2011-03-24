@@ -12,21 +12,54 @@ use Modern::Perl;    ## no critic (UselessNoCritic,RequireExplicitPackage)
 package XML::Ant::BuildFile::Project::Target;
 
 BEGIN {
-    $XML::Ant::BuildFile::Project::Target::VERSION = '0.203';
+    $XML::Ant::BuildFile::Project::Target::VERSION = '0.204';
 }
 
 # ABSTRACT: target node within an Ant build file
 
+use English '-no_match_vars';
 use Moose;
-use MooseX::Types::Moose 'Str';
+use MooseX::Has::Sugar;
+use MooseX::Types::Moose qw(ArrayRef Str);
+use Regexp::DefaultFlags;
+## no critic (RequireDotMatchAnything, RequireExtendedFormatting)
+## no critic (RequireLineBoundaryMatching)
 use namespace::autoclean;
 with 'XML::Rabbit::Node' => { -version => '0.0.4' };
 
-has name => (
-    isa    => Str,
-    traits => ['XPathValue'],
-    xpath_query => './@name',   ## no critic (RequireInterpolationOfMetachars)
+has project => (
+    isa         => 'XML::Ant::BuildFile::Project',
+    traits      => ['XPathObject'],
+    xpath_query => q{/},
 );
+
+{
+## no critic (ValuesAndExpressions::RequireInterpolationOfMetachars)
+    has name => (
+        isa         => Str,
+        traits      => ['XPathValue'],
+        xpath_query => './@name',
+    );
+
+    has _depends => (
+        isa         => Str,
+        traits      => ['XPathValue'],
+        xpath_query => './@depends',
+        predicate   => '_has_depends',
+    );
+}
+
+has dependencies => ( ro, lazy_build, isa => ArrayRef [__PACKAGE__] );
+
+sub _build_dependencies {    ## no critic (ProhibitUnusedPrivateSubroutines)
+    my $self = shift;
+    return if not $self->_has_depends or not $self->_depends;
+
+    return [
+        map { $self->project->get_target($ARG) } split /,/,
+        $self->_depends,
+    ];
+}
 
 __PACKAGE__->meta->make_immutable();
 1;
@@ -43,7 +76,7 @@ XML::Ant::BuildFile::Project::Target - target node within an Ant build file
 
 =head1 VERSION
 
-version 0.203
+version 0.204
 
 =head1 SYNOPSIS
 
@@ -61,9 +94,20 @@ description.
 
 =head1 ATTRIBUTES
 
+=head2 project
+
+Reference to the L<XML::Ant::BuildFile::Project|XML::Ant::BuildFile::Project>
+at the root of the build file containing this target.
+
 =head2 name
 
 Name of the target.
+
+=head2
+
+If the target has any dependencies, this will return them as an array reference
+of L<XML::Ant::BuildFile::Project::Target|XML::Ant::BuildFile::Project::Target>
+objects.
 
 =head1 BUGS
 

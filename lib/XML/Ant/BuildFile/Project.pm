@@ -12,7 +12,7 @@ use Modern::Perl;    ## no critic (UselessNoCritic,RequireExplicitPackage)
 package XML::Ant::BuildFile::Project;
 
 BEGIN {
-    $XML::Ant::BuildFile::Project::VERSION = '0.203';
+    $XML::Ant::BuildFile::Project::VERSION = '0.204';
 }
 
 # ABSTRACT: consume Ant build files
@@ -59,9 +59,15 @@ has '+_file' => ( isa => 'FileStr', coerce => 1 );
 
     has targets => (
         isa         => 'HashRef[XML::Ant::BuildFile::Project::Target]',
-        traits      => ['XPathObjectMap'],
+        traits      => [qw(XPathObjectMap Hash)],
         xpath_query => '/project/target[@name]',
         xpath_key   => './@name',
+        handles     => {
+            target_names => 'keys',
+            get_target   => 'get',
+            has_target   => 'exists',
+            num_targets  => 'count',
+        },
     );
 }
 
@@ -94,7 +100,7 @@ XML::Ant::BuildFile::Project - consume Ant build files
 
 =head1 VERSION
 
-version 0.203
+version 0.204
 
 =head1 SYNOPSIS
 
@@ -133,8 +139,9 @@ L<XML::Ant::BuildFile::Project::FileList|XML::Ant::BuildFile::Project::FileList>
 
 =head2 targets
 
-Array reference of target L<XML::Rabbit::Node|XML::Rabbit::Node>s
-from the build file.
+Hash reference of
+L<XML::Ant::BuildFile::Project::Target|XML::Ant::BuildFile::Project::Target>s
+from the build file.  The keys are the target names.
 
 =head2 properties
 
@@ -152,6 +159,26 @@ contains the following predefined properties as per the Ant documentation:
 =item ant.project.name
 
 =back
+
+=head1 METHODS
+
+=head2 target_names
+
+Returns a list of the target names from the build file.
+
+=head2 get_target
+
+Given a target name, return the corresponding
+L<XML::Ant::BuildFile::Project::Target|XML::Ant::BuildFile::Project::Target>
+object.
+
+=head2 has_target
+
+Given a target name, returns true or false if the target exists.
+
+=head2 num_targets
+
+Returns a count of the number of targets in the build file.
 
 =head1 BUGS
 
