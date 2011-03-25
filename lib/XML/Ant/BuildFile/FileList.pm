@@ -9,10 +9,10 @@
 use utf8;
 use Modern::Perl;    ## no critic (UselessNoCritic,RequireExplicitPackage)
 
-package XML::Ant::BuildFile::Project::FileList;
+package XML::Ant::BuildFile::FileList;
 
 BEGIN {
-    $XML::Ant::BuildFile::Project::FileList::VERSION = '0.204';
+    $XML::Ant::BuildFile::FileList::VERSION = '0.205';
 }
 
 # ABSTRACT: file list node within an Ant build file
@@ -27,14 +27,7 @@ use MooseX::Has::Sugar;
 use MooseX::Types::Moose qw(ArrayRef HashRef Str);
 use MooseX::Types::Path::Class qw(Dir File);
 use namespace::autoclean;
-with 'XML::Rabbit::Node' => { -version => '0.0.4' };
-
-has project => (
-    isa         => 'XML::Ant::BuildFile::Project',
-    traits      => ['XPathObject'],
-    xpath_query => q{/},
-    handles     => ['properties'],
-);
+with 'XML::Ant::BuildFile::Role::InProject';
 
 {
 ## no critic (ValuesAndExpressions::RequireInterpolationOfMetachars)
@@ -64,14 +57,30 @@ has project => (
 has directory => ( ro, required, lazy,
     isa      => Dir,
     init_arg => undef,
-    default  => sub { dir( $ARG[0]->_property_subst( $ARG[0]->_dir_attr ) ) },
+    default  => sub {
+        dir( $ARG[0]->project->apply_properties( $ARG[0]->_dir_attr ) );
+    },
 );
 
-has files => ( ro, lazy_build, isa => ArrayRef [File], init_arg => undef );
+has _files => ( ro,
+    lazy_build,
+    isa => ArrayRef [File],
+    traits   => ['Array'],
+    init_arg => undef,
+    handles  => {
+        files        => 'elements',
+        map_files    => 'map',
+        filter_files => 'grep',
+        find_file    => 'first',
+        file         => 'get',
+        num_files    => 'count',
+    },
+);
 
-sub _build_files
+sub _build__files
 {    ## no critic (Subroutines::ProhibitUnusedPrivateSubroutines)
-    my $self = shift;
+    my $self    = shift;
+    my $project = $self->project;
     my @file_names;
 
     if ( defined $self->_file_names ) {
@@ -81,17 +90,9 @@ sub _build_files
         push @file_names, split / [,\s]* /, $self->_files_attr_names;
     }
 
-    return [ map { $self->directory->file( $self->_property_subst($ARG) ) }
+    return [
+        map { $self->directory->file( $project->apply_properties($ARG) ) }
             @file_names ];
-}
-
-sub _property_subst {
-    my ( $self, $source ) = @ARG;
-    my %properties = %{ $self->properties };
-    while ( my ( $property, $value ) = each %properties ) {
-        $source =~ s/ \$ {$property} /$value/g;
-    }
-    return $source;
 }
 
 __PACKAGE__->meta->make_immutable();
@@ -105,11 +106,11 @@ __PACKAGE__->meta->make_immutable();
 
 =head1 NAME
 
-XML::Ant::BuildFile::Project::FileList - file list node within an Ant build file
+XML::Ant::BuildFile::FileList - file list node within an Ant build file
 
 =head1 VERSION
 
-version 0.204
+version 0.205
 
 =head1 SYNOPSIS
 
@@ -129,11 +130,6 @@ description.
 
 =head1 ATTRIBUTES
 
-=head2 project
-
-Reference to the L<XML::Ant::BuildFile::Project|XML::Ant::BuildFile::Project>
-at the root of the build file containing this file list.
-
 =head2 id
 
 C<id> attribute of this file list.
@@ -147,12 +143,6 @@ element's C<dir> attribute with all property substitutions applied.
 
 Reference to an array of L<Path::Class::File|Path::Class::File>s within
 this file list with all property substitutions applied.
-
-=head1 METHODS
-
-=head2 properties
-
-Properties hash reference for the build file.
 
 =head1 BUGS
 

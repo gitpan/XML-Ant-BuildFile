@@ -9,10 +9,10 @@
 use utf8;
 use Modern::Perl;    ## no critic (UselessNoCritic,RequireExplicitPackage)
 
-package XML::Ant::BuildFile::Project::Target;
+package XML::Ant::BuildFile::Target;
 
 BEGIN {
-    $XML::Ant::BuildFile::Project::Target::VERSION = '0.204';
+    $XML::Ant::BuildFile::Target::VERSION = '0.205';
 }
 
 # ABSTRACT: target node within an Ant build file
@@ -24,14 +24,9 @@ use MooseX::Types::Moose qw(ArrayRef Str);
 use Regexp::DefaultFlags;
 ## no critic (RequireDotMatchAnything, RequireExtendedFormatting)
 ## no critic (RequireLineBoundaryMatching)
+use XML::Ant::BuildFile::Task::Java;
 use namespace::autoclean;
-with 'XML::Rabbit::Node' => { -version => '0.0.4' };
-
-has project => (
-    isa         => 'XML::Ant::BuildFile::Project',
-    traits      => ['XPathObject'],
-    xpath_query => q{/},
-);
+with 'XML::Ant::BuildFile::Role::InProject';
 
 {
 ## no critic (ValuesAndExpressions::RequireInterpolationOfMetachars)
@@ -54,11 +49,25 @@ has dependencies => ( ro, lazy_build, isa => ArrayRef [__PACKAGE__] );
 sub _build_dependencies {    ## no critic (ProhibitUnusedPrivateSubroutines)
     my $self = shift;
     return if not $self->_has_depends or not $self->_depends;
+    return [ map { $self->project->target($ARG) } split /,/,
+        $self->_depends ];
+}
 
-    return [
-        map { $self->project->get_target($ARG) } split /,/,
-        $self->_depends,
-    ];
+has _tasks => (
+    traits      => [qw(XPathObjectList Array)],
+    xpath_query => './/java',
+    isa_map     => { java => 'XML::Ant::BuildFile::Task::Java' },
+    handles     => {
+        all_tasks    => 'elements',
+        task         => 'get',
+        filter_tasks => 'grep',
+        num_tasks    => 'count',
+    },
+);
+
+sub tasks {
+    my ( $self, @names ) = @ARG;
+    return $self->filter_tasks( sub { $ARG->task_name ~~ @names } );
 }
 
 __PACKAGE__->meta->make_immutable();
@@ -72,11 +81,11 @@ __PACKAGE__->meta->make_immutable();
 
 =head1 NAME
 
-XML::Ant::BuildFile::Project::Target - target node within an Ant build file
+XML::Ant::BuildFile::Target - target node within an Ant build file
 
 =head1 VERSION
 
-version 0.204
+version 0.205
 
 =head1 SYNOPSIS
 
@@ -94,20 +103,37 @@ description.
 
 =head1 ATTRIBUTES
 
-=head2 project
-
-Reference to the L<XML::Ant::BuildFile::Project|XML::Ant::BuildFile::Project>
-at the root of the build file containing this target.
-
 =head2 name
 
 Name of the target.
 
-=head2
+=head2 dependencies
 
 If the target has any dependencies, this will return them as an array reference
-of L<XML::Ant::BuildFile::Project::Target|XML::Ant::BuildFile::Project::Target>
+of L<XML::Ant::BuildFile::Target|XML::Ant::BuildFile::Target>
 objects.
+
+=head1 METHODS
+
+=head2 all_tasks
+
+Returns an array of task objects contained in this target.
+
+=head2 task
+
+Given an index number returns that task from the target.
+
+=head2 filter_tasks
+
+Returns all task objects for which the given code reference returns C<true>.
+
+=head2 num_tasks
+
+Returns a count of the number of tasks in this target.
+
+=head2 tasks
+
+Given one or more task names, returns a list of task objects.
 
 =head1 BUGS
 
