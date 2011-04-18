@@ -13,7 +13,7 @@ use Modern::Perl;    ## no critic (UselessNoCritic,RequireExplicitPackage)
 package XML::Ant::Properties;
 
 BEGIN {
-    $XML::Ant::Properties::VERSION = '0.206';
+    $XML::Ant::Properties::VERSION = '0.207';
 }
 
 # ABSTRACT: Singleton class for Ant properties
@@ -22,14 +22,14 @@ use strict;
 use English '-no_match_vars';
 use MooseX::Singleton;
 use MooseX::Has::Sugar;
-use MooseX::Types::Moose qw(HashRef Str);
+use MooseX::Types::Moose qw(HashRef Maybe Str);
 use Regexp::DefaultFlags;
 ## no critic (RequireDotMatchAnything, RequireExtendedFormatting)
 ## no critic (RequireLineBoundaryMatching)
 use namespace::autoclean;
 
 has _properties => ( rw,
-    isa => HashRef [Str],
+    isa => HashRef [ Maybe [Str] ],
     init_arg => undef,
     traits   => ['Hash'],
     default  => sub { {} },
@@ -51,7 +51,9 @@ around set => sub {
 };
 
 sub apply {
-    my ( $self, $source ) = @ARG;
+    my $self = shift;
+    my $source = shift or return;
+
     my %property = %{ $self->_properties };
     while ( $source =~ / \$ { [\w:.]+ } / ) {
         my $old_source = $source;
@@ -78,7 +80,7 @@ XML::Ant::Properties - Singleton class for Ant properties
 
 =head1 VERSION
 
-version 0.206
+version 0.207
 
 =head1 SYNOPSIS
 
