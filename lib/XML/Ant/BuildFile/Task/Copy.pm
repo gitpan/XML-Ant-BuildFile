@@ -10,26 +10,37 @@ use 5.012;
 use utf8;
 use Modern::Perl;    ## no critic (UselessNoCritic,RequireExplicitPackage)
 
-package XML::Ant::BuildFile::Task;
+package XML::Ant::BuildFile::Task::Copy;
 
 BEGIN {
-    $XML::Ant::BuildFile::Task::VERSION = '0.206';
+    $XML::Ant::BuildFile::Task::Copy::VERSION = '0.206';
 }
 
-# ABSTRACT: Role for Ant build file tasks
+# ABSTRACT: copy task node in an Ant build file
 
-use strict;
 use English '-no_match_vars';
-use Moose::Role;
-use MooseX::Has::Sugar;
+use Moose;
 use MooseX::Types::Moose 'Str';
+use MooseX::Has::Sugar;
+use MooseX::Types::Path::Class 'File';
+use Path::Class;
+use XML::Ant::Properties;
 use namespace::autoclean;
-with 'XML::Ant::BuildFile::Role::InProject';
+extends 'XML::Ant::BuildFile::ResourceContainer';
+with 'XML::Ant::BuildFile::Task';
 
-has task_name => ( ro, lazy,
-    isa      => Str,
-    init_arg => undef,
-    default  => sub { $ARG[0]->node->nodeName },
+has _to_file =>
+    ( ro,
+    ## no critic (ValuesAndExpressions::RequireInterpolationOfMetachars)
+    isa         => Str,
+    traits      => ['XPathValue'],
+    xpath_query => './@tofile',
+    );
+
+has to_file => ( ro, lazy,
+    isa => File,
+    default =>
+        sub { dir( XML::Ant::Properties->apply( $ARG[0]->_to_file ) ) },
 );
 
 1;
@@ -42,7 +53,7 @@ has task_name => ( ro, lazy,
 
 =head1 NAME
 
-XML::Ant::BuildFile::Task - Role for Ant build file tasks
+XML::Ant::BuildFile::Task::Copy - copy task node in an Ant build file
 
 =head1 VERSION
 
@@ -50,27 +61,26 @@ version 0.206
 
 =head1 SYNOPSIS
 
-    package XML::Ant::BuildFile::Task::Foo;
+    package My::Ant;
     use Moose;
-    with 'XML::Ant::BuildFile::Task';
+    with 'XML::Rabbit::Node';
 
-    after BUILD => sub {
-        my $self = shift;
-        print "I'm a ", $self->task_name, "\n";
-    };
-
-    1;
+    has paths => (
+        isa         => 'ArrayRef[XML::Ant::BuildFile::Task::Copy]',
+        traits      => 'XPathObjectList',
+        xpath_query => './/copy',
+    );
 
 =head1 DESCRIPTION
 
-This is a role shared by tasks in an
-L<XML::Ant::BuildFile::Project|XML::Ant::BuildFile::Project>.
+This is a L<Moose|Moose> type class meant for use with
+L<XML::Rabbit|XML::Rabbit> when processing copy tasks in an Ant build file.
 
 =head1 ATTRIBUTES
 
-=head2 task_name
+=head2 to_file
 
-Name of the task's XML node.
+The file to copy to as a L<Path::Class::File|Path::Class::File> object.
 
 =head1 BUGS
 

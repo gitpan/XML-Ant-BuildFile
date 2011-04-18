@@ -7,6 +7,7 @@
 # This is free software; you can redistribute it and/or modify it under
 # the same terms as the Perl 5 programming language system itself.
 #
+use 5.012;
 use utf8;
 use Modern::Perl;    ## no critic (UselessNoCritic,RequireExplicitPackage)
 
@@ -19,8 +20,7 @@ BEGIN {
 }
 
 use Test::More;
-
-eval "use Test::CheckChanges";
-plan skip_all => "Test::CheckChanges required for testing changes"
-    if $@;
-ok_changes();
+eval 'use Test::CPAN::Changes';
+plan skip_all => 'Test::CPAN::Changes required for this test' if $@;
+changes_ok();
+done_testing();

@@ -10,13 +10,13 @@ use 5.012;
 use utf8;
 use Modern::Perl;    ## no critic (UselessNoCritic,RequireExplicitPackage)
 
-package XML::Ant::BuildFile::Task;
+package XML::Ant::BuildFile::Resource;
 
 BEGIN {
-    $XML::Ant::BuildFile::Task::VERSION = '0.206';
+    $XML::Ant::BuildFile::Resource::VERSION = '0.206';
 }
 
-# ABSTRACT: Role for Ant build file tasks
+# ABSTRACT: Role for Ant build file resources
 
 use strict;
 use English '-no_match_vars';
@@ -26,11 +26,28 @@ use MooseX::Types::Moose 'Str';
 use namespace::autoclean;
 with 'XML::Ant::BuildFile::Role::InProject';
 
-has task_name => ( ro, lazy,
+requires 'as_string';
+
+has resource_name => ( ro, lazy,
     isa      => Str,
     init_arg => undef,
     default  => sub { $ARG[0]->node->nodeName },
 );
+
+{
+## no critic (ValuesAndExpressions::RequireInterpolationOfMetachars)
+    has id =>
+        ( ro, isa => Str, traits => ['XPathValue'], xpath_query => './@id' );
+}
+
+sub BUILD {
+    my $self = shift;
+    if ( $self->id ) {
+        XML::Ant::Properties->set(
+            'toString:' . $self->id => $self->as_string );
+    }
+    return;
+}
 
 1;
 
@@ -42,7 +59,7 @@ has task_name => ( ro, lazy,
 
 =head1 NAME
 
-XML::Ant::BuildFile::Task - Role for Ant build file tasks
+XML::Ant::BuildFile::Resource - Role for Ant build file resources
 
 =head1 VERSION
 
@@ -50,27 +67,44 @@ version 0.206
 
 =head1 SYNOPSIS
 
-    package XML::Ant::BuildFile::Task::Foo;
+    package XML::Ant::BuildFile::Resource::Foo;
     use Moose;
-    with 'XML::Ant::BuildFile::Task';
+    with 'XML::Ant::BuildFile::Resource';
 
     after BUILD => sub {
         my $self = shift;
-        print "I'm a ", $self->task_name, "\n";
+        print "I'm a ", $self->resource_name, "\n";
     };
 
     1;
 
 =head1 DESCRIPTION
 
-This is a role shared by tasks in an
+This is a role shared by resources in an
 L<XML::Ant::BuildFile::Project|XML::Ant::BuildFile::Project>.
 
 =head1 ATTRIBUTES
 
-=head2 task_name
+=head2 as_string
+
+Every role consumer must implement the C<as_string> method.
+
+=head2 resource_name
 
 Name of the task's XML node.
+
+=head2 id
+
+C<id> attribute of this resource.
+
+=head1 METHODS
+
+=head2 BUILD
+
+After a resource is constructed, it adds its L<id|/id> and
+L<string representation|/as_string> to the
+L<XML::Ant::Properties|XML::Ant::Properties> singleton with C<toString:>
+prepended to the C<id>.
 
 =head1 BUGS
 

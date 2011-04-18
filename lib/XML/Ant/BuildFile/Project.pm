@@ -6,13 +6,14 @@
 # This is free software; you can redistribute it and/or modify it under
 # the same terms as the Perl 5 programming language system itself.
 #
+use 5.012;
 use utf8;
 use Modern::Perl;    ## no critic (UselessNoCritic,RequireExplicitPackage)
 
 package XML::Ant::BuildFile::Project;
 
 BEGIN {
-    $XML::Ant::BuildFile::Project::VERSION = '0.205';
+    $XML::Ant::BuildFile::Project::VERSION = '0.206';
 }
 
 # ABSTRACT: consume Ant build files
@@ -28,7 +29,7 @@ use Readonly;
 use Regexp::DefaultFlags;
 ## no critic (RequireDotMatchAnything, RequireExtendedFormatting)
 ## no critic (RequireLineBoundaryMatching)
-use namespace::autoclean;
+extends 'XML::Ant::BuildFile::ResourceContainer';
 with 'XML::Rabbit::RootNode';
 
 subtype 'FileStr', as Str;
@@ -55,7 +56,7 @@ has '+_file' => ( isa => 'FileStr', coerce => 1 );
     );
 
     has _filelists => (
-        isa         => 'ArrayRef[XML::Ant::BuildFile::FileList]',
+        isa         => 'ArrayRef[XML::Ant::BuildFile::Resource::FileList]',
         traits      => [qw(XPathObjectList Array)],
         xpath_query => '//filelist[@id]',
         handles     => {
@@ -66,6 +67,15 @@ has '+_file' => ( isa => 'FileStr', coerce => 1 );
             find_filelist    => 'first',
             num_filelists    => 'count',
         },
+    );
+
+    has paths => (
+        auto_deref  => 1,
+        isa         => 'HashRef[XML::Ant::BuildFile::Resource::Path]',
+        traits      => [qw(XPathObjectMap Hash)],
+        xpath_query => '//classpath[@id]|//path[@id]',
+        xpath_key   => './@id',
+        handles     => { path => 'get', path_pairs => 'kv' },
     );
 
     has targets => (
@@ -84,39 +94,29 @@ has '+_file' => ( isa => 'FileStr', coerce => 1 );
     );
 }
 
-has properties => (
-    is      => ro,
-    isa     => HashRef [Str],
-    traits  => ['Hash'],
-    default => sub { {} },
-    handles => { property => 'get' },
-);
+sub BUILD {
+    my $self = shift;
 
-around properties => sub {
-    my ( $orig, $self ) = @ARG;
-    return {
+    XML::Ant::Properties->set(
         'os.name'          => $OSNAME,
         'basedir'          => file( $self->_file )->dir->stringify(),
         'ant.file'         => $self->_file,
         'ant.project.name' => $self->name,
         %{ $self->_properties },
-        %{ $self->$orig() },
-    };
-};
+    );
 
-sub apply_properties {
-    my ( $self, $source ) = @ARG;
-    my %properties = %{ $self->properties };
-
-    while ( $source =~ / \$ { [\w.]+ } / ) {
-        while ( my ( $property, $value ) = each %properties ) {
-            $source =~ s/ \$ {$property} /$value/g;
+    for my $attr ( $self->meta->get_all_attributes() ) {
+        next if !$attr->has_type_constraint;
+        if ( $attr->type_constraint->name
+            =~ /XML::Ant::BuildFile::Resource::/ )
+        {
+            my $attr_name  = $attr->name;
+            my $dummy_attr = $self->$attr_name;
         }
     }
-    return $source;
+    return;
 }
 
-__PACKAGE__->meta->make_immutable();
 1;
 
 =pod
@@ -131,7 +131,7 @@ XML::Ant::BuildFile::Project - consume Ant build files
 
 =head1 VERSION
 
-version 0.205
+version 0.206
 
 =head1 SYNOPSIS
 
@@ -164,34 +164,23 @@ by L<XML::Rabbit::Role::Document|XML::Rabbit::Role::Document>.
 
 Name of the Ant project.
 
+=head2 paths
+
+Hash of
+L<XML::Ant::BuildFile::Resource::Path|XML::Ant::BuildFile::Resource::Path>s
+from the build file.  The keys are the path C<id>s.
+
 =head2 targets
 
 Hash of L<XML::Ant::BuildFile::Target|XML::Ant::BuildFile::Target>s
 from the build file.  The keys are the target names.
 
-=head2 properties
-
-Read-only hash reference to properties set by the build file.  This also
-contains the following predefined properties as per the Ant documentation:
-
-=over
-
-=item os.name
-
-=item basedir
-
-=item ant.file
-
-=item ant.project.name
-
-=back
-
 =head1 METHODS
 
 =head2 filelists
 
-Returns an array of all L<filelist|XML::Ant::BuildFile::FileList>s in the
-project.
+Returns an array of all L<filelist|XML::Ant::BuildFile::Resource::FileList>s
+in the project.
 
 =head2 filelist
 
@@ -218,6 +207,12 @@ returns C<true>.
 
 Returns a count of all C<filelist>s in the project.
 
+=head2 path
+
+Given a list of one or more C<id> strings, returns a list of
+L<XML::Ant::BuildFile::Resource::Path|XML::Ant::BuildFile::Resource::Path>s
+for C<< <classpath/> >>s and C<< <path/> >>s in the project.
+
 =head2 target
 
 Given a list of target names, return the corresponding
@@ -242,13 +237,26 @@ Given a target name, returns true or false if the target exists.
 
 Returns a count of the number of targets in the build file.
 
-=head2 property
+=head2 BUILD
 
-Returns the value for one or more given property names.
+After construction, the app-wide L<XML::Ant::Properties|XML::Ant::Properties>
+singleton stores any C<< <property/> >> name/value pairs set by the build file,
+as well as any resource string expansions handled by
+L<XML::Ant::BuildFile::Resource|XML::Ant::BuildFile::Resource> plugins.
+It also contains the following predefined properties as per the Ant
+documentation:
 
-=head2 apply_properties
+=over
 
-Takes a string and applies L<property|/properties> substitution to it.
+=item os.name
+
+=item basedir
+
+=item ant.file
+
+=item ant.project.name
+
+=back
 
 =head1 BUGS
 

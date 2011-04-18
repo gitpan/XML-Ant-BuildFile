@@ -2,7 +2,7 @@ NAME
     XML::Ant::BuildFile::Project - consume Ant build files
 
 VERSION
-    version 0.205
+    version 0.206
 
 SYNOPSIS
         use XML::Ant::BuildFile::Project;
@@ -30,19 +30,13 @@ ATTRIBUTES
   name
     Name of the Ant project.
 
+  paths
+    Hash of XML::Ant::BuildFile::Resource::Paths from the build file. The
+    keys are the path "id"s.
+
   targets
     Hash of XML::Ant::BuildFile::Targets from the build file. The keys are
     the target names.
-
-  properties
-    Read-only hash reference to properties set by the build file. This also
-    contains the following predefined properties as per the Ant
-    documentation:
-
-    os.name
-    basedir
-    ant.file
-    ant.project.name
 
 METHODS
   filelists
@@ -68,6 +62,11 @@ METHODS
   num_filelists
     Returns a count of all "filelist"s in the project.
 
+  path
+    Given a list of one or more "id" strings, returns a list of
+    XML::Ant::BuildFile::Resource::Paths for "<classpath/>"s and "<path/>"s
+    in the project.
+
   target
     Given a list of target names, return the corresponding
     XML::Ant::BuildFile::Target objects. In scalar context return only the
@@ -85,11 +84,17 @@ METHODS
   num_targets
     Returns a count of the number of targets in the build file.
 
-  property
-    Returns the value for one or more given property names.
+  BUILD
+    After construction, the app-wide XML::Ant::Properties singleton stores
+    any "<property/>" name/value pairs set by the build file, as well as any
+    resource string expansions handled by XML::Ant::BuildFile::Resource
+    plugins. It also contains the following predefined properties as per the
+    Ant documentation:
 
-  apply_properties
-    Takes a string and applies property substitution to it.
+    os.name
+    basedir
+    ant.file
+    ant.project.name
 
 BUGS
     Please report any bugs or feature requests on the bugtracker website

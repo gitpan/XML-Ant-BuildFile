@@ -7,6 +7,7 @@
 # This is free software; you can redistribute it and/or modify it under
 # the same terms as the Perl 5 programming language system itself.
 #
+use 5.012;
 use utf8;
 use Modern::Perl;    ## no critic (UselessNoCritic,RequireExplicitPackage)
 
@@ -14,7 +15,6 @@ use Test::Most tests => 8;
 use English '-no_match_vars';
 use Readonly;
 use Path::Class;
-use XML::Ant::BuildFile::Project;
 
 our $CLASS;
 
@@ -48,7 +48,7 @@ cmp_deeply(
 
 cmp_deeply(
     [ $project->map_filelists( sub { $ARG->directory->stringify() } ) ],
-    [ (q{.}) x 3 ],
+    [ (q{t}) x 3 ],
     'filelist dirs',
 );
 
@@ -56,6 +56,6 @@ cmp_deeply(
     [   map { $ARG->stringify() }
             $project->map_filelists( sub { $ARG->files } )
     ],
-    [ map {"./$ARG"} qw(a a b a b) ],
+    [ map {"t/$ARG"} qw(a a b a b) ],
     'files'
 );

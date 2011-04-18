@@ -19,14 +19,24 @@ BEGIN {
     }
 }
 
+use strict;
+use warnings;
 use Test::More;
 
-eval "use Test::Pod::Coverage 1.08";
-plan skip_all => "Test::Pod::Coverage 1.08 required for testing POD coverage"
-    if $@;
+foreach my $env_skip (
+    qw(
+    SKIP_POD_LINKCHECK
+    )
+    )
+{
+    plan skip_all => "\$ENV{$env_skip} is set, skipping"
+        if $ENV{$env_skip};
+}
 
-eval "use Pod::Coverage::TrustPod";
-plan skip_all => "Pod::Coverage::TrustPod required for testing POD coverage"
-    if $@;
-
-all_pod_coverage_ok( { coverage_class => 'Pod::Coverage::TrustPod' } );
+eval "use Test::Pod::LinkCheck";
+if ($@) {
+    plan skip_all => 'Test::Pod::LinkCheck required for testing POD';
+}
+else {
+    Test::Pod::LinkCheck->new->all_pod_ok;
+}

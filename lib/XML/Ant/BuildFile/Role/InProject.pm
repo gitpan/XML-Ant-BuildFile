@@ -6,13 +6,14 @@
 # This is free software; you can redistribute it and/or modify it under
 # the same terms as the Perl 5 programming language system itself.
 #
+use 5.012;
 use utf8;
 use Modern::Perl;    ## no critic (UselessNoCritic,RequireExplicitPackage)
 
 package XML::Ant::BuildFile::Role::InProject;
 
 BEGIN {
-    $XML::Ant::BuildFile::Role::InProject::VERSION = '0.205';
+    $XML::Ant::BuildFile::Role::InProject::VERSION = '0.206';
 }
 
 # ABSTRACT: role for nodes in an Ant project
@@ -26,7 +27,6 @@ has project => (
     isa         => 'XML::Ant::BuildFile::Project',
     traits      => ['XPathObject'],
     xpath_query => q{/},
-    handles     => ['properties'],
 );
 
 1;
@@ -43,7 +43,7 @@ XML::Ant::BuildFile::Role::InProject - role for nodes in an Ant project
 
 =head1 VERSION
 
-version 0.205
+version 0.206
 
 =head1 SYNOPSIS
 
@@ -64,10 +64,6 @@ L<XML::Ant::BuildFile::Project|XML::Ant::BuildFile::Project>.
 
 Reference to the L<XML::Ant::BuildFile::Project|XML::Ant::BuildFile::Project>
 at the root of the build file.
-
-=head2 properties
-
-Properties hash reference for the build file.
 
 =head1 BUGS
 
