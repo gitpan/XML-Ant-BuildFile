@@ -30,7 +30,7 @@
             "Moose::Util::TypeConstraints" : 0,
             "MooseX::Has::Sugar" : 0,
             "MooseX::Has::Sugar::Minimal" : 0,
-            "MooseX::Singleton" : 0,
+            "MooseX::Singleton" : "0.26",
             "MooseX::Types::Moose" : 0,
             "MooseX::Types::Path::Class" : 0,
             "Path::Class" : 0,
@@ -43,6 +43,9 @@
             "namespace::autoclean" : 0,
             "perl" : "5.012",
             "utf8" : 0
+         },
+         "suggests" : {
+            "Readonly::XS" : 0
          }
       },
       "test" : {
@@ -64,6 +67,6 @@
          "web" : "http://github.com/mjgardner/XML-Ant-BuildFile/issues"
       }
    },
-   "version" : "0.207"
+   "version" : "0.208"
 }
 

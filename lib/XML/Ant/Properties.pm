@@ -13,14 +13,14 @@ use Modern::Perl;    ## no critic (UselessNoCritic,RequireExplicitPackage)
 package XML::Ant::Properties;
 
 BEGIN {
-    $XML::Ant::Properties::VERSION = '0.207';
+    $XML::Ant::Properties::VERSION = '0.208';
 }
 
 # ABSTRACT: Singleton class for Ant properties
 
 use strict;
 use English '-no_match_vars';
-use MooseX::Singleton;
+use MooseX::Singleton 0.26;
 use MooseX::Has::Sugar;
 use MooseX::Types::Moose qw(HashRef Maybe Str);
 use Regexp::DefaultFlags;
@@ -80,7 +80,7 @@ XML::Ant::Properties - Singleton class for Ant properties
 
 =head1 VERSION
 
-version 0.207
+version 0.208
 
 =head1 SYNOPSIS
 
