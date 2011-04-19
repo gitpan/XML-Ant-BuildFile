@@ -13,7 +13,7 @@ use Modern::Perl;    ## no critic (UselessNoCritic,RequireExplicitPackage)
 package XML::Ant::BuildFile::Project;
 
 BEGIN {
-    $XML::Ant::BuildFile::Project::VERSION = '0.209';
+    $XML::Ant::BuildFile::Project::VERSION = '0.210';
 }
 
 # ABSTRACT: consume Ant build files
@@ -97,13 +97,22 @@ has '+_file' => ( isa => 'FileStr', coerce => 1 );
 sub BUILD {
     my $self = shift;
 
-    XML::Ant::Properties->set(
+    my %ant_property = (
         'os.name'          => $OSNAME,
         'basedir'          => file( $self->_file )->dir->stringify(),
         'ant.file'         => $self->_file,
         'ant.project.name' => $self->name,
-        %{ $self->_properties },
     );
+    for my $property (
+        grep { not XML::Ant::Properties->exists($ARG) }
+        keys %ant_property
+        )
+    {
+        XML::Ant::Properties->set( $property => $ant_property{$property} );
+    }
+    if ( keys %{ $self->_properties } ) {
+        XML::Ant::Properties->set( %{ $self->_properties } );
+    }
 
     for my $attr ( $self->meta->get_all_attributes() ) {
         next if !$attr->has_type_constraint;
@@ -131,7 +140,7 @@ XML::Ant::BuildFile::Project - consume Ant build files
 
 =head1 VERSION
 
-version 0.209
+version 0.210
 
 =head1 SYNOPSIS
 

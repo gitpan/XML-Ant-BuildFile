@@ -13,7 +13,7 @@ use Modern::Perl;    ## no critic (UselessNoCritic,RequireExplicitPackage)
 package XML::Ant::Properties;
 
 BEGIN {
-    $XML::Ant::Properties::VERSION = '0.209';
+    $XML::Ant::Properties::VERSION = '0.210';
 }
 
 # ABSTRACT: Singleton class for Ant properties
@@ -35,7 +35,7 @@ has _properties => ( rw,
     default  => sub { {} },
     handles  => {
         map { $ARG => $ARG }
-            qw(count get set delete exists defined keys values clear),
+            qw(count get set delete exists defined keys values clear kv),
     },
 );
 
@@ -80,7 +80,7 @@ XML::Ant::Properties - Singleton class for Ant properties
 
 =head1 VERSION
 
-version 0.209
+version 0.210
 
 =head1 SYNOPSIS
 
@@ -114,6 +114,8 @@ the L<apply|/apply> method.
 =head2 values
 
 =head2 clear
+
+=head2 kv
 
 =head2 apply
 
