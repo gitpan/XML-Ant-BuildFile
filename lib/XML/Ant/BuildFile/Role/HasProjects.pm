@@ -6,14 +6,14 @@
 # This is free software; you can redistribute it and/or modify it under
 # the same terms as the Perl 5 programming language system itself.
 #
-use 5.012;
+use 5.010;
 use utf8;
 use Modern::Perl;    ## no critic (UselessNoCritic,RequireExplicitPackage)
 
 package XML::Ant::BuildFile::Role::HasProjects;
 
 BEGIN {
-    $XML::Ant::BuildFile::Role::HasProjects::VERSION = '0.211';
+    $XML::Ant::BuildFile::Role::HasProjects::VERSION = '0.212';
 }
 
 # ABSTRACT: Compose a collection of Ant build file projects
@@ -99,7 +99,7 @@ XML::Ant::BuildFile::Role::HasProjects - Compose a collection of Ant build file 
 
 =head1 VERSION
 
-version 0.211
+version 0.212
 
 =head1 SYNOPSIS
 

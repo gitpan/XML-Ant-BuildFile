@@ -6,14 +6,14 @@
 # This is free software; you can redistribute it and/or modify it under
 # the same terms as the Perl 5 programming language system itself.
 #
-use 5.012;
+use 5.010;
 use utf8;
 use Modern::Perl;    ## no critic (UselessNoCritic,RequireExplicitPackage)
 
 package XML::Ant::BuildFile::Task::Java;
 
 BEGIN {
-    $XML::Ant::BuildFile::Task::Java::VERSION = '0.211';
+    $XML::Ant::BuildFile::Task::Java::VERSION = '0.212';
 }
 
 # ABSTRACT: Java task node in an Ant build file
@@ -72,7 +72,7 @@ XML::Ant::BuildFile::Task::Java - Java task node in an Ant build file
 
 =head1 VERSION
 
-version 0.211
+version 0.212
 
 =head1 SYNOPSIS
 
@@ -86,8 +86,7 @@ version 0.211
 
 =head1 DESCRIPTION
 
-This is an incomplete class for
-L<Ant Java task|http://ant.apache.org/manual/Tasks/java.html>s in a
+This is an incomplete class for Ant Java tasks in a
 L<build file project|XML::Ant::BuildFile::Project>.
 
 =head1 ATTRIBUTES

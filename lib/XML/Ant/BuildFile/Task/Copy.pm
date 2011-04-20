@@ -6,14 +6,14 @@
 # This is free software; you can redistribute it and/or modify it under
 # the same terms as the Perl 5 programming language system itself.
 #
-use 5.012;
+use 5.010;
 use utf8;
 use Modern::Perl;    ## no critic (UselessNoCritic,RequireExplicitPackage)
 
 package XML::Ant::BuildFile::Task::Copy;
 
 BEGIN {
-    $XML::Ant::BuildFile::Task::Copy::VERSION = '0.211';
+    $XML::Ant::BuildFile::Task::Copy::VERSION = '0.212';
 }
 
 # ABSTRACT: copy task node in an Ant build file
@@ -61,7 +61,7 @@ XML::Ant::BuildFile::Task::Copy - copy task node in an Ant build file
 
 =head1 VERSION
 
-version 0.211
+version 0.212
 
 =head1 SYNOPSIS
 

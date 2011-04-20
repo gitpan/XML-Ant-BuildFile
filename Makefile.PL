@@ -2,7 +2,7 @@
 use strict;
 use warnings;
 
-BEGIN { require 5.012; }
+BEGIN { require 5.010; }
 
 use ExtUtils::MakeMaker 6.31;
 
@@ -48,7 +48,7 @@ my %WriteMakefileArgs = (
     'namespace::autoclean' => '0',
     'utf8' => '0'
   },
-  'VERSION' => '0.211',
+  'VERSION' => '0.212',
   'test' => {
     'TESTS' => 't/*.t'
   }
