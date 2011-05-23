@@ -4,7 +4,7 @@ use warnings;
 
 BEGIN { require 5.010; }
 
-use ExtUtils::MakeMaker 6.31;
+use ExtUtils::MakeMaker 6.30;
 
 
 
@@ -16,10 +16,11 @@ my %WriteMakefileArgs = (
     'File::Temp' => '0',
     'Scalar::Util' => '0',
     'Test::More' => '0.94',
-    'Test::Most' => '0'
+    'Test::Most' => '0',
+    'perl' => '5.004'
   },
   'CONFIGURE_REQUIRES' => {
-    'ExtUtils::MakeMaker' => '6.31'
+    'ExtUtils::MakeMaker' => '6.30'
   },
   'DISTNAME' => 'XML-Ant-BuildFile',
   'EXE_FILES' => [],
@@ -48,7 +49,7 @@ my %WriteMakefileArgs = (
     'namespace::autoclean' => '0',
     'utf8' => '0'
   },
-  'VERSION' => '0.214',
+  'VERSION' => '0.215',
   'test' => {
     'TESTS' => 't/*.t'
   }
