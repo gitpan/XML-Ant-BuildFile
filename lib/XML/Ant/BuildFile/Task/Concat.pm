@@ -1,7 +1,7 @@
 #
 # This file is part of XML-Ant-BuildFile
 #
-# This software is copyright (c) 2011 by GSI Commerce.
+# This software is copyright (c) 2014 by GSI Commerce.
 #
 # This is free software; you can redistribute it and/or modify it under
 # the same terms as the Perl 5 programming language system itself.
@@ -10,10 +10,7 @@ use utf8;
 use Modern::Perl;    ## no critic (UselessNoCritic,RequireExplicitPackage)
 
 package XML::Ant::BuildFile::Task::Concat;
-
-BEGIN {
-    $XML::Ant::BuildFile::Task::Concat::VERSION = '0.215';
-}
+$XML::Ant::BuildFile::Task::Concat::VERSION = '0.216';
 
 # ABSTRACT: concat task node in an Ant build file
 
@@ -42,14 +39,18 @@ has destfile => ( ro, lazy,
         sub { file( XML::Ant::Properties->apply( $ARG[0]->_destfile ) ) },
 );
 
+no Moose;
+
 1;
+
+__END__
 
 =pod
 
-=for :stopwords Mark Gardner GSI Commerce cpan testmatrix url annocpan anno bugtracker rt
-cpants kwalitee diff irc mailto metadata placeholders
+=encoding UTF-8
 
-=encoding utf8
+=for :stopwords Mark Gardner GSI Commerce cpan testmatrix url annocpan anno bugtracker rt
+cpants kwalitee diff irc mailto metadata placeholders metacpan
 
 =head1 NAME
 
@@ -57,7 +58,7 @@ XML::Ant::BuildFile::Task::Concat - concat task node in an Ant build file
 
 =head1 VERSION
 
-version 0.215
+version 0.216
 
 =head1 SYNOPSIS
 
@@ -101,6 +102,14 @@ in addition to those websites please use your favorite search engine to discover
 
 =item *
 
+MetaCPAN
+
+A modern, open-source CPAN search engine, useful to view POD in HTML format.
+
+L<http://metacpan.org/release/XML-Ant-BuildFile>
+
+=item *
+
 Search CPAN
 
 The default CPAN search engine, useful to view POD in HTML format.
@@ -113,13 +122,13 @@ RT: CPAN's Bug Tracker
 
 The RT ( Request Tracker ) website is the default bug/issue tracking system for CPAN.
 
-L<http://rt.cpan.org/NoAuth/Bugs.html?Dist=XML-Ant-BuildFile>
+L<https://rt.cpan.org/Public/Dist/Display.html?Name=XML-Ant-BuildFile>
 
 =item *
 
 AnnoCPAN
 
-The AnnoCPAN is a website that allows community annonations of Perl module documentation.
+The AnnoCPAN is a website that allows community annotations of Perl module documentation.
 
 L<http://annocpan.org/dist/XML-Ant-BuildFile>
 
@@ -145,7 +154,7 @@ CPANTS
 
 The CPANTS is a website that analyzes the Kwalitee ( code metrics ) of a distribution.
 
-L<http://cpants.perl.org/dist/overview/XML-Ant-BuildFile>
+L<http://cpants.cpanauthors.org/dist/XML-Ant-BuildFile>
 
 =item *
 
@@ -159,7 +168,7 @@ L<http://www.cpantesters.org/distro/X/XML-Ant-BuildFile>
 
 CPAN Testers Matrix
 
-The CPAN Testers Matrix is a website that provides a visual way to determine what Perls/platforms PASSed for a distribution.
+The CPAN Testers Matrix is a website that provides a visual overview of the test results for a distribution on various Perls/platforms.
 
 L<http://matrix.cpantesters.org/?dist=XML-Ant-BuildFile>
 
@@ -195,11 +204,9 @@ Mark Gardner <mjgardner@cpan.org>
 
 =head1 COPYRIGHT AND LICENSE
 
-This software is copyright (c) 2011 by GSI Commerce.
+This software is copyright (c) 2014 by GSI Commerce.
 
 This is free software; you can redistribute it and/or modify it under
 the same terms as the Perl 5 programming language system itself.
 
 =cut
-
-__END__

@@ -2,7 +2,7 @@
 #
 # This file is part of XML-Ant-BuildFile
 #
-# This software is copyright (c) 2011 by GSI Commerce.
+# This software is copyright (c) 2014 by GSI Commerce.
 #
 # This is free software; you can redistribute it and/or modify it under
 # the same terms as the Perl 5 programming language system itself.
@@ -18,9 +18,13 @@ BEGIN {
     }
 }
 
+use strict;
+use warnings qw(all);
+
 use Test::More;
 
-eval "use Test::HasVersion";
-plan skip_all => "Test::HasVersion required for testing version numbers"
-    if $@;
-all_pm_version_ok();
+## no critic (ProhibitStringyEval, RequireCheckingReturnValueOfEval)
+eval q(use Test::Mojibake);
+plan skip_all => q(Test::Mojibake required for source encoding testing) if $@;
+
+all_files_encoding_ok();

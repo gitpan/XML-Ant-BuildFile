@@ -2,7 +2,7 @@
 #
 # This file is part of XML-Ant-BuildFile
 #
-# This software is copyright (c) 2011 by GSI Commerce.
+# This software is copyright (c) 2014 by GSI Commerce.
 #
 # This is free software; you can redistribute it and/or modify it under
 # the same terms as the Perl 5 programming language system itself.
@@ -18,9 +18,6 @@ BEGIN {
     }
 }
 
-use Test::More;
+use Test::Synopsis;
 
-eval "use Test::Synopsis";
-plan skip_all => "Test::Synopsis required for testing synopses"
-    if $@;
-all_synopsis_ok('lib');
+all_synopsis_ok();

@@ -18,12 +18,15 @@ BEGIN {
     }
 }
 
-use strict;
-use warnings;
+use Test::More 0.96 tests => 1;
+eval { require Test::Vars };
 
-use Test::More 0.96 tests => 2;
-use_ok('Test::CPAN::Changes');
-subtest 'changes_ok' => sub {
-    changes_file_ok('Changes');
-};
-done_testing();
+SKIP: {
+    skip 1 => 'Test::Vars required for testing for unused vars'
+        if $@;
+    Test::Vars->import;
+
+    subtest 'unused vars' => sub {
+        all_vars_ok();
+    };
+}

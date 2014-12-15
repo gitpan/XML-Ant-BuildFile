@@ -2,7 +2,7 @@
 #
 # This file is part of XML-Ant-BuildFile
 #
-# This software is copyright (c) 2011 by GSI Commerce.
+# This software is copyright (c) 2014 by GSI Commerce.
 #
 # This is free software; you can redistribute it and/or modify it under
 # the same terms as the Perl 5 programming language system itself.
@@ -34,7 +34,7 @@ cmp_deeply(
     {   map {
             $ARG->[0] => map {"$ARG"}
                 $ARG->[1]->as_string
-            } $project->path_pairs
+        } $project->path_pairs
     },
     {   'site.css.concat' => target_yui('concat/site.css'),
         'site.js.concat'  => target_yui('concat/site.js'),
